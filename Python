@@ -1,0 +1,52 @@
+import multiprocessing
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.application import MIMEApplication
+import os,time
+
+def send_enclosure():
+    os.chdir(r'E:\360极速浏览器')
+    os.getcwd()
+    # 1.发件人、授权码，收件人信息
+    from_addr = "754529523@qq.com"
+    pwd = "ntfeqbdedyttbeif"
+    to_addr = "xiongyong@mastercom.cn"
+
+    # 2.创建实例对象，设置主题等信息
+    msg = MIMEMultipart()
+    msg["Subject"] = "爬虫信息更新"
+    msg["From"] = from_addr
+    msg["To"] = to_addr
+
+    # 邮件内容（按每个部分）
+    part1 = MIMEText("发送给吴菲达的邮件")
+    msg.attach(part1)
+
+    # 添加图片附件
+    part2 = MIMEApplication(open('爬虫数据2019-11-28.txt', 'rb').read())
+    part2.add_header('Content-Disposition', 'attachment', filename="爬虫数据2019-11-28.txt")
+    msg.attach(part2)
+
+    # 3.连接smtp服务器，登录服务器并发送文本
+    smtp_server = "smtp.qq.com"
+    server = smtplib.SMTP(smtp_server, 25)
+    server.login(from_addr, pwd)
+    server.sendmail(from_addr, to_addr, msg.as_string())  # as_string（）把MIMEText变成一个str
+    server.close()
+    return True
+
+'''
+定时函数默认60秒
+'''
+def re_exe(inc = 20):
+    while True:
+        if  send_enclosure():
+            print ("邮件发送成功!")
+        else:
+            print ("failed!")
+        time.sleep(inc)
+
+if __name__ == '__main__':
+    for i in range(10):
+        re_exe(20)
